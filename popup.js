@@ -275,15 +275,16 @@
     try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return ""; }
   }
 
-  // Only http(s) thumbnails; escape quotes so CSS url() can't break out.
+  // Only absolute http(s) thumbnails; escape quotes so CSS url() can't break out.
+  // No base URL — relative paths must throw and be ignored, not resolve to a fake host.
   function setThumbBackground(el, rawUrl) {
     if (!el || !rawUrl) return;
     try {
-      var u = new URL(rawUrl, "https://example.invalid");
+      var u = new URL(rawUrl);
       if (u.protocol !== "http:" && u.protocol !== "https:") return;
       el.style.backgroundImage = 'url("' + u.href.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '")';
       el.classList.add("has-image");
-    } catch (e) { /* ignore bad thumbnail URLs */ }
+    } catch (e) { /* ignore bad / relative thumbnail URLs */ }
   }
 
   quickAddBtn.addEventListener("click", function () {
