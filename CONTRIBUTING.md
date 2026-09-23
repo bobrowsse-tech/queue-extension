@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Smart Video Queue. A few ground rules keep the
+Thanks for helping improve QueueDeck. A few ground rules keep the
 extension auditable and trustworthy.
 
 ## Workflow

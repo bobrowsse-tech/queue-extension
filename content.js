@@ -194,7 +194,7 @@
     var wrap = document.createElement("div");
     wrap.className = "q-toast";
     wrap.setAttribute("role", "region");
-    wrap.setAttribute("aria-label", "Save video to Smart Video Queue");
+    wrap.setAttribute("aria-label", "Save video to QueueDeck");
     wrap.innerHTML =
       '<div class="q-row q-head">' +
         '<span class="q-dot" aria-hidden="true"></span>' +
@@ -221,7 +221,7 @@
       if (action === "save") {
         QueueStorage.addItem(meta).then(function () {
           savedForUrl = meta.url;
-          announce(wrap, "Saved to Smart Video Queue.");
+          announce(wrap, "Saved to QueueDeck.");
           collapseAfterDelay();
         });
       } else if (action === "dismiss") {

@@ -1,6 +1,6 @@
-# Smart Video Queue — Documentation Index
+# QueueDeck — Documentation Index
 
-Smart Video Queue is a free, open source Chrome extension (Manifest V3)
+QueueDeck is a free, open source Chrome extension (Manifest V3)
 that lets a person save video links to watch later. It has no backend: all
 state lives in `chrome.storage.local` on the user's machine.
 

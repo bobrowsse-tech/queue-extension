@@ -1,4 +1,4 @@
-# Smart Video Queue
+# QueueDeck
 
 A Chrome extension that saves video links so you can watch them later. No
 accounts, no servers, no analytics — everything lives in your browser's
@@ -12,7 +12,7 @@ local storage.
   asking if you want to save it. Say no once and it won't ask again for
   that video.
 - **One-click save.** Click the toolbar icon any time — if the current tab
-  has a video, Smart Video Queue shows an **Add** button at the top of the
+  has a video, QueueDeck shows an **Add** button at the top of the
   popup so you can save it immediately, no waiting required.
 - **A real playlist.** Every saved video is listed with its thumbnail,
   title, source site, and when it was added. Click any entry to open it in
@@ -43,7 +43,7 @@ local storage.
 1. Open `chrome://extensions`.
 2. Turn on **Developer mode** (top right).
 3. Click **Load unpacked** and select this folder.
-4. Pin the **Smart Video Queue** icon to your toolbar.
+4. Pin the **QueueDeck** icon to your toolbar.
 
 ## Why these permissions
 

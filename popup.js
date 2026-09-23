@@ -291,7 +291,7 @@
     if (!currentTabMeta) return;
     QueueStorage.addItem(currentTabMeta).then(function () {
       quickAdd.hidden = true;
-      announce("Added to Smart Video Queue");
+      announce("Added to QueueDeck");
       render();
     });
   });

@@ -91,10 +91,10 @@
           showStatus("Imported " + result.added + " new videos.");
           load();
         }).catch(function () {
-          showStatus("That file doesn't look like a Smart Video Queue export.");
+          showStatus("That file doesn't look like a QueueDeck export.");
         });
       } catch (e) {
-        showStatus("That file doesn't look like a Smart Video Queue export.");
+        showStatus("That file doesn't look like a QueueDeck export.");
       }
     };
     reader.readAsText(file);
