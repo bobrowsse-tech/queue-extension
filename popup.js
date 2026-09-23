@@ -143,10 +143,7 @@
         link.setAttribute("aria-label", item.title + (item.watched ? " (watched)" : ""));
 
         var thumb = node.querySelector(".item-thumb");
-        if (item.thumbnail) {
-          thumb.style.backgroundImage = "url('" + item.thumbnail.replace(/'/g, "%27") + "')";
-          thumb.classList.add("has-image");
-        }
+        setThumbBackground(thumb, item.thumbnail);
         if (item.duration > 0) {
           var pct = Math.min(100, Math.round(((item.position || 0) / item.duration) * 100));
           node.querySelector(".item-progress-fill").style.width = pct + "%";
@@ -233,9 +230,7 @@
         QueueStorage.hasUrl(meta.url).then(function (already) {
           if (already) return; // already saved — no need to prompt again
           quickAddTitle.textContent = meta.title;
-          if (meta.thumbnail) {
-            quickAddThumb.style.backgroundImage = "url('" + meta.thumbnail.replace(/'/g, "%27") + "')";
-          }
+          setThumbBackground(quickAddThumb, meta.thumbnail);
           quickAdd.hidden = false;
         });
       });
@@ -278,6 +273,17 @@
 
   function hostnameOf(url) {
     try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return ""; }
+  }
+
+  // Only http(s) thumbnails; escape quotes so CSS url() can't break out.
+  function setThumbBackground(el, rawUrl) {
+    if (!el || !rawUrl) return;
+    try {
+      var u = new URL(rawUrl, "https://example.invalid");
+      if (u.protocol !== "http:" && u.protocol !== "https:") return;
+      el.style.backgroundImage = 'url("' + u.href.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '")';
+      el.classList.add("has-image");
+    } catch (e) { /* ignore bad thumbnail URLs */ }
   }
 
   quickAddBtn.addEventListener("click", function () {

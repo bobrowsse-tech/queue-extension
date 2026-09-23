@@ -20,6 +20,10 @@ var QueueStorage = (function () {
     listFilter: "all" // "all" | "unwatched" | "watched"
   };
 
+  var VALID_THEMES = { system: true, light: true, dark: true };
+  var VALID_SORTS = { newest: true, oldest: true, site: true };
+  var VALID_FILTERS = { all: true, unwatched: true, watched: true };
+
   function promisify(fn, arg) {
     return new Promise(function (resolve, reject) {
       fn(arg, function (result) {
@@ -59,25 +63,66 @@ var QueueStorage = (function () {
     }
   }
 
+  // Fill missing fields so older saved lists stay readable after schema adds.
+  function normalizeItem(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    return {
+      id: raw.id || generateId(),
+      url: raw.url || "",
+      normalizedUrl: raw.normalizedUrl || normalizeUrl(raw.url || ""),
+      title: (raw.title || raw.url || "Untitled").trim(),
+      siteName: raw.siteName || "",
+      thumbnail: raw.thumbnail || "",
+      note: typeof raw.note === "string" ? raw.note : "",
+      position: Number(raw.position) || 0,
+      duration: Number(raw.duration) || 0,
+      addedAt: Number(raw.addedAt) || Date.now(),
+      watched: !!raw.watched
+    };
+  }
+
+  function clampDelay(seconds) {
+    var n = Math.round(Number(seconds));
+    if (!isFinite(n)) n = DEFAULT_SETTINGS.popupDelaySeconds;
+    return Math.min(180, Math.max(5, n));
+  }
+
+  function sanitizeSettings(partial) {
+    var next = Object.assign({}, DEFAULT_SETTINGS, partial || {});
+    next.popupEnabled = !!next.popupEnabled;
+    next.popupDelaySeconds = clampDelay(next.popupDelaySeconds);
+    if (!VALID_THEMES[next.theme]) next.theme = DEFAULT_SETTINGS.theme;
+    if (!VALID_SORTS[next.listSort]) next.listSort = DEFAULT_SETTINGS.listSort;
+    if (!VALID_FILTERS[next.listFilter]) next.listFilter = DEFAULT_SETTINGS.listFilter;
+    return next;
+  }
+
   function getSettings() {
     return get(KEYS.SETTINGS).then(function (res) {
-      return Object.assign({}, DEFAULT_SETTINGS, res[KEYS.SETTINGS] || {});
+      return sanitizeSettings(res[KEYS.SETTINGS] || {});
     });
   }
 
   function setSettings(partial) {
     return getSettings().then(function (current) {
-      var next = Object.assign({}, current, partial);
-      return set({ [KEYS.SETTINGS]: next }).then(function () { return next; });
+      var next = sanitizeSettings(Object.assign({}, current, partial));
+      var payload = {};
+      payload[KEYS.SETTINGS] = next;
+      return set(payload).then(function () { return next; });
     });
   }
 
   function getItems() {
-    return get(KEYS.ITEMS).then(function (res) { return res[KEYS.ITEMS] || []; });
+    return get(KEYS.ITEMS).then(function (res) {
+      var items = res[KEYS.ITEMS] || [];
+      return items.map(normalizeItem).filter(Boolean);
+    });
   }
 
   function setItems(items) {
-    return set({ [KEYS.ITEMS]: items });
+    var payload = {};
+    payload[KEYS.ITEMS] = items;
+    return set(payload);
   }
 
   // Returns { item, alreadyExisted }
@@ -100,21 +145,58 @@ var QueueStorage = (function () {
         }
         return { item: existing, alreadyExisted: true };
       }
-      var item = {
+      var item = normalizeItem({
         id: generateId(),
         url: partialItem.url,
         normalizedUrl: normalized,
-        title: (partialItem.title || partialItem.url || "Untitled").trim(),
+        title: partialItem.title || partialItem.url || "Untitled",
         siteName: partialItem.siteName || "",
         thumbnail: partialItem.thumbnail || "",
-        note: "",
+        note: typeof partialItem.note === "string" ? partialItem.note : "",
         position: partialItem.position || 0,
         duration: partialItem.duration || 0,
         addedAt: Date.now(),
         watched: false
-      };
+      });
       items.unshift(item);
       return setItems(items).then(function () { return { item: item, alreadyExisted: false }; });
+    });
+  }
+
+  // Merge a JSON export into the current list. Skips duplicates by
+  // normalizedUrl; preserves file order of newly added items.
+  // Returns { added, total }.
+  function importItems(incoming) {
+    if (!Array.isArray(incoming)) {
+      return Promise.reject(new Error("not an array"));
+    }
+    return getItems().then(function (existing) {
+      var seen = {};
+      existing.forEach(function (it) { seen[it.normalizedUrl] = true; });
+      var toAdd = [];
+      incoming.forEach(function (raw) {
+        if (!raw || !raw.url) return;
+        var normalized = normalizeUrl(raw.url);
+        if (seen[normalized]) return;
+        seen[normalized] = true;
+        toAdd.push(normalizeItem({
+          id: generateId(),
+          url: raw.url,
+          normalizedUrl: normalized,
+          title: raw.title || raw.url,
+          siteName: raw.siteName || "",
+          thumbnail: raw.thumbnail || "",
+          note: raw.note,
+          position: raw.position,
+          duration: raw.duration,
+          addedAt: raw.addedAt || Date.now(),
+          watched: !!raw.watched
+        }));
+      });
+      var next = toAdd.concat(existing);
+      return setItems(next).then(function () {
+        return { added: toAdd.length, total: next.length };
+      });
     });
   }
 
@@ -147,7 +229,7 @@ var QueueStorage = (function () {
   function updateItem(id, patch) {
     return getItems().then(function (items) {
       var next = items.map(function (it) {
-        return it.id === id ? Object.assign({}, it, patch) : it;
+        return it.id === id ? normalizeItem(Object.assign({}, it, patch)) : it;
       });
       return setItems(next);
     });
@@ -172,6 +254,7 @@ var QueueStorage = (function () {
     getItems: getItems,
     setItems: setItems,
     addItem: addItem,
+    importItems: importItems,
     updatePositionByUrl: updatePositionByUrl,
     removeItem: removeItem,
     updateItem: updateItem,

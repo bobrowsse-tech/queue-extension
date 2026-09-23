@@ -65,8 +65,13 @@ storage.js         Shared read/write layer over chrome.storage.local
 popup.html/.css/.js   Toolbar popup: the playlist itself
 options.html/.css/.js Settings page: delay, on/off, theme, export/import
 icons/            Toolbar icons (16/32/48/128)
+test/             Node test suite (`node --test test/*.test.js`)
 docs/             Project documentation (see docs/index.md)
 ```
+
+## Contributing
+
+PRs only — `main` is protected. See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## License
 

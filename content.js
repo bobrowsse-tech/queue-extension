@@ -49,13 +49,16 @@
     toastShownForUrl = null;
     dismissedForUrl = null;
     savedForUrl = null;
-    stopTicking();
+    detachVideo();
     removeToast();
   }
 
   function scanForVideo() {
     var videos = Array.prototype.slice.call(document.querySelectorAll("video"));
-    if (videos.length === 0) return;
+    if (videos.length === 0) {
+      detachVideo();
+      return;
+    }
     // Prefer the largest visible video on the page (main player over ads/thumbnails).
     var best = videos.reduce(function (a, b) {
       return rectArea(b) > rectArea(a) ? b : a;
@@ -70,7 +73,19 @@
     return Math.max(0, r.width) * Math.max(0, r.height);
   }
 
+  function detachVideo() {
+    if (trackedVideo) {
+      trackedVideo.removeEventListener("play", startTicking);
+      trackedVideo.removeEventListener("pause", stopTicking);
+      trackedVideo.removeEventListener("ended", stopTicking);
+    }
+    stopTicking();
+    trackedVideo = null;
+  }
+
   function attachVideo(video) {
+    if (trackedVideo === video) return;
+    detachVideo();
     trackedVideo = video;
     video.addEventListener("play", startTicking);
     video.addEventListener("pause", stopTicking);
