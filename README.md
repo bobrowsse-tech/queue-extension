@@ -6,8 +6,8 @@ local storage.
 
 ## What it does
 
-- **Passive save prompt.** While you're watching a video on any site, Smart
-  Video Queue waits until you've been watching for a while (20 seconds by
+- **Passive save prompt.** While you're watching a video on any site,
+  QueueDeck waits until you've been watching for a while (20 seconds by
   default, fully adjustable) and then shows a small, dismissible prompt
   asking if you want to save it. Say no once and it won't ask again for
   that video.
