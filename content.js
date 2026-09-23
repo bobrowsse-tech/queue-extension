@@ -194,7 +194,7 @@
     var wrap = document.createElement("div");
     wrap.className = "q-toast";
     wrap.setAttribute("role", "region");
-    wrap.setAttribute("aria-label", "Save video to Queue");
+    wrap.setAttribute("aria-label", "Save video to Smart Video Queue");
     wrap.innerHTML =
       '<div class="q-row q-head">' +
         '<span class="q-dot" aria-hidden="true"></span>' +
@@ -204,7 +204,7 @@
       '<p class="q-title"></p>' +
       '<p class="q-site"></p>' +
       '<div class="q-row q-actions">' +
-        '<button type="button" class="q-btn q-btn-primary" data-action="save">Save to Queue</button>' +
+        '<button type="button" class="q-btn q-btn-primary" data-action="save">Save video</button>' +
         '<button type="button" class="q-btn q-btn-ghost" data-action="dismiss">Not now</button>' +
       "</div>" +
       '<button type="button" class="q-settings-link" data-action="settings">Adjust or turn off this prompt</button>' +
@@ -221,7 +221,7 @@
       if (action === "save") {
         QueueStorage.addItem(meta).then(function () {
           savedForUrl = meta.url;
-          announce(wrap, "Saved to your Queue.");
+          announce(wrap, "Saved to Smart Video Queue.");
           collapseAfterDelay();
         });
       } else if (action === "dismiss") {

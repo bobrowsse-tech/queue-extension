@@ -1,7 +1,7 @@
 # Contributing
 
-Thanks for helping improve Queue. A few ground rules keep the extension
-auditable and trustworthy.
+Thanks for helping improve Smart Video Queue. A few ground rules keep the
+extension auditable and trustworthy.
 
 ## Workflow
 

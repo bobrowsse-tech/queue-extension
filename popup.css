@@ -67,7 +67,7 @@ html, body {
 }
 .brand { display: flex; align-items: center; gap: 8px; }
 .brand-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
-.brand h1 { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.brand h1 { font-size: 14px; font-weight: 700; margin: 0; letter-spacing: -0.02em; line-height: 1.2; }
 
 .icon-btn {
   all: unset; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
