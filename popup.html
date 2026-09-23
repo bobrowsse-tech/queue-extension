@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark" />
+<title>Queue</title>
+<link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <h1>Queue</h1>
+      </div>
+      <button type="button" id="openOptions" class="icon-btn" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M19.4 13a7.9 7.9 0 0 0 .1-1 7.9 7.9 0 0 0-.1-1l2.1-1.6a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.6 7.6 0 0 0-1.7-1L14.4 2a.5.5 0 0 0-.5-.4h-4a.5.5 0 0 0-.5.4l-.4 2.7a7.6 7.6 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.5 11a7.9 7.9 0 0 0 0 2l-2.1 1.6a.5.5 0 0 0-.1.6l2 3.5c.1.2.4.3.6.2l2.5-1c.5.4 1.1.8 1.7 1l.4 2.7c0 .3.2.4.5.4h4c.3 0 .5-.2.5-.4l.4-2.7c.6-.3 1.2-.6 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6L19.4 13Zm-7.4 2.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"/>
+        </svg>
+      </button>
+    </header>
+
+    <section id="quickAdd" class="quick-add" hidden>
+      <div class="quick-add-thumb" id="quickAddThumb" aria-hidden="true"></div>
+      <div class="quick-add-info">
+        <p class="quick-add-label">On this tab</p>
+        <p class="quick-add-title" id="quickAddTitle"></p>
+      </div>
+      <button type="button" id="quickAddBtn" class="btn btn-primary btn-sm">Add</button>
+    </section>
+
+    <div class="listbar">
+      <h2 id="countLabel">0 saved</h2>
+      <button type="button" id="clearAll" class="link-btn">Clear all</button>
+    </div>
+
+    <div class="controlbar">
+      <label class="control">
+        <span class="sr-only">Filter</span>
+        <select id="filterSelect" aria-label="Filter saved videos">
+          <option value="all">All</option>
+          <option value="unwatched">Unwatched</option>
+          <option value="watched">Watched</option>
+        </select>
+      </label>
+      <label class="control">
+        <span class="sr-only">Sort</span>
+        <select id="sortSelect" aria-label="Sort saved videos">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="site">By site</option>
+        </select>
+      </label>
+    </div>
+
+    <ul id="list" class="list" aria-label="Saved videos"></ul>
+
+    <p id="emptyState" class="empty-state" hidden>
+      Nothing queued yet. Open a video and click <strong>Add</strong> above, or let Queue prompt you while you watch.
+    </p>
+
+    <p id="noMatches" class="empty-state" hidden>
+      Nothing matches this filter.
+    </p>
+
+    <template id="itemTemplate">
+      <li class="item">
+        <a class="item-link" target="_blank" rel="noopener noreferrer">
+          <span class="item-thumb">
+            <span class="item-thumb-fallback" aria-hidden="true">▶</span>
+            <span class="item-progress" aria-hidden="true"><span class="item-progress-fill"></span></span>
+          </span>
+          <span class="item-body">
+            <span class="item-title"></span>
+            <span class="item-meta">
+              <span class="item-site"></span>
+              <span class="item-dot" aria-hidden="true">·</span>
+              <span class="item-time"></span>
+              <span class="item-resume"></span>
+            </span>
+            <span class="item-note-preview" hidden></span>
+          </span>
+        </a>
+        <div class="item-actions">
+          <button type="button" class="icon-btn watch-toggle" aria-pressed="false" aria-label="Mark as watched">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+          </button>
+          <button type="button" class="icon-btn note-btn" aria-label="Add note">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v12H7l-3 3z"/></svg>
+          </button>
+          <button type="button" class="icon-btn edit-btn" aria-label="Rename">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>
+          </button>
+          <button type="button" class="icon-btn remove-btn" aria-label="Remove from Queue">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7l-1.4-1.4L9.2 12 2.9 5.7l1.4-1.4L10.6 10.6l6.3-6.3z"/></svg>
+          </button>
+        </div>
+        <div class="item-note-editor" hidden>
+          <textarea class="item-note-input" aria-label="Note for this video" rows="2" placeholder="Add a note…"></textarea>
+          <div class="item-note-actions">
+            <button type="button" class="btn btn-primary btn-sm note-save">Save</button>
+            <button type="button" class="btn btn-ghost btn-sm note-cancel">Cancel</button>
+          </div>
+        </div>
+      </li>
+    </template>
+  </div>
+  <div id="liveRegion" class="sr-only" aria-live="polite"></div>
+  <script src="storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

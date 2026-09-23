@@ -1,0 +1,9 @@
+.DS_Store
+*.crx
+*.pem
+*.zip
+node_modules/
+.chrome-profile/
+.env
+.env.*
+*.log
